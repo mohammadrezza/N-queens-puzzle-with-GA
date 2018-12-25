@@ -4,21 +4,34 @@ NUMBER_OF_QUEENS = 8
 PRIMITIVE_POPULATION = 50
 
 
+class Situation:
+    def __init__(self):
+        self.ordering = []
+        self.chance = None
+
+    def __mul__(self, other):
+        l = []
+        for _ in range(other):
+            sit = Situation()
+            sit.__dict__ = self.__dict__
+            l.append(sit)
+        return l
+
 def create_population():
     crowd = []
     # indexes represents column number
     for i in range(PRIMITIVE_POPULATION):
-        rnd = []
+        sit = Situation()
         # value of the indexes represents row number
         for j in range(NUMBER_OF_QUEENS):
-            rnd.append(random.randrange(NUMBER_OF_QUEENS))
-        crowd.append(rnd)
+            sit.ordering.append(random.randrange(NUMBER_OF_QUEENS))
+        crowd.append(sit)
     return crowd
 
 
 def order(k):
     # calculating all possible hit situations
-    return k * (k - 1) / 2
+    return int(k * (k - 1) / 2)
 
 
 def evaluate(number):
@@ -38,9 +51,13 @@ def evaluate(number):
 
 def fitness(crowd):
     for i in range(len(crowd)):
-        crowd[i] = [crowd[i], int(order(NUMBER_OF_QUEENS)) - evaluate(crowd[i])]
+        crowd[i].chance = order(NUMBER_OF_QUEENS) - evaluate(crowd[i].ordering)
     return crowd
 
 
 population = create_population()
-print(fitness(population))
+
+condition = True
+while condition:
+    parents = fitness(population)
+
