@@ -62,6 +62,17 @@ def selection(crowd):
         pot.extend(prsn * prsn.chance)
     return random.sample(pot, PRIMITIVE_POPULATION)
 
+def cross_over(crowd):
+    child = []
+    for i in range(0, len(crowd), 2):
+        father = crowd[i].ordering
+        mother = crowd[i + 1].ordering
+        cross_point = random.randrange(0, NUMBER_OF_QUEENS)
+        boy = father[:cross_point] + mother[cross_point:]
+        girl = mother[:cross_point] + father[cross_point:]
+        child.append(boy)
+        child.append(girl)
+    return child
 
 population = create_population()
 
@@ -69,3 +80,5 @@ condition = True
 while condition:
     fitted_population = fitness(population)
     parents = selection(fitted_population)
+    cross_over(parents)
+    
