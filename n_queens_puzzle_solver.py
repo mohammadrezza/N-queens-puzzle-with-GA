@@ -2,6 +2,7 @@ import random
 
 NUMBER_OF_QUEENS = 8
 PRIMITIVE_POPULATION = 50
+MUTATE_RATIO = 0.1
 
 
 class Situation:
@@ -68,11 +69,23 @@ def cross_over(crowd):
         father = crowd[i].ordering
         mother = crowd[i + 1].ordering
         cross_point = random.randrange(0, NUMBER_OF_QUEENS)
-        boy = father[:cross_point] + mother[cross_point:]
-        girl = mother[:cross_point] + father[cross_point:]
+        boy = Situation()
+        girl = Situation()
+        boy.ordering = father[:cross_point] + mother[cross_point:]
+        girl.ordering = mother[:cross_point] + father[cross_point:]
         child.append(boy)
         child.append(girl)
     return child
+
+def mutation(child):
+    for i, children in enumerate(child):
+        rnd = round(random.uniform(0.0, 1.0), 2)
+        if rnd < MUTATE_RATIO:
+            queen = random.randrange(0, NUMBER_OF_QUEENS)
+            pos = random.randrange(0, NUMBER_OF_QUEENS)
+            children.ordering[queen] = pos
+    return child
+
 
 population = create_population()
 
@@ -80,5 +93,4 @@ condition = True
 while condition:
     fitted_population = fitness(population)
     parents = selection(fitted_population)
-    cross_over(parents)
-    
+    mutation(cross_over(parents))
