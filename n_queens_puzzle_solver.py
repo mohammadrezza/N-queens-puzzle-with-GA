@@ -17,6 +17,7 @@ class Situation:
             l.append(sit)
         return l
 
+
 def create_population():
     crowd = []
     # indexes represents column number
@@ -55,9 +56,16 @@ def fitness(crowd):
     return crowd
 
 
+def selection(crowd):
+    pot = []
+    for prsn in crowd:
+        pot.extend(prsn * prsn.chance)
+    return random.sample(pot, PRIMITIVE_POPULATION)
+
+
 population = create_population()
 
 condition = True
 while condition:
-    parents = fitness(population)
-
+    fitted_population = fitness(population)
+    parents = selection(fitted_population)
