@@ -1,8 +1,10 @@
 import random
 
-NUMBER_OF_QUEENS = 4
+NUMBER_OF_QUEENS = 8
 PRIMITIVE_POPULATION = 50
-MUTATE_RATIO = 0.1
+MUTATE_RATIO = 0.2
+PARENTS_INTERFERENCE_SIZE = int(0.1 * PRIMITIVE_POPULATION)
+CHILDREN_INTERFERENCE_SIZE = PRIMITIVE_POPULATION - PARENTS_INTERFERENCE_SIZE
 
 
 class Situation:
@@ -90,7 +92,7 @@ def mutation(childrn):
 
 
 def visual(number):
-    f = open("v", "w")
+    f = open("answer", "w")
     for i in range(NUMBER_OF_QUEENS - 1, -1, -1):
         line = ""
         for j in range(NUMBER_OF_QUEENS):
@@ -105,7 +107,9 @@ def visual(number):
 if __name__ == "__main__":
     population = create_population()
     answer_found = False
+    cnt = 0
     while not answer_found:
+        cnt += 1
         fitted_population = fitness(population)
         parents = selection(fitted_population)
         children = mutation(cross_over(parents))
@@ -116,4 +120,5 @@ if __name__ == "__main__":
             answer_found = True
             visual(best.ordering)
         sorted_parents = sorted(parents, key=lambda x: x.chance, reverse=True)
-        population = sorted_parents[:5] + sorted_children[:45]
+        population = sorted_parents[:PARENTS_INTERFERENCE_SIZE] + sorted_children[:CHILDREN_INTERFERENCE_SIZE]
+        print("Generation: {0} , best approach: {1}".format(cnt, best.chance))
