@@ -1,6 +1,6 @@
 import random
 
-NUMBER_OF_QUEENS = 8
+NUMBER_OF_QUEENS = 4
 PRIMITIVE_POPULATION = 50
 MUTATE_RATIO = 0.1
 
@@ -63,8 +63,9 @@ def selection(crowd):
         pot.extend(prsn * prsn.chance)
     return random.sample(pot, PRIMITIVE_POPULATION)
 
+
 def cross_over(crowd):
-    child = []
+    childrn = []
     for i in range(0, len(crowd), 2):
         father = crowd[i].ordering
         mother = crowd[i + 1].ordering
@@ -73,24 +74,46 @@ def cross_over(crowd):
         girl = Situation()
         boy.ordering = father[:cross_point] + mother[cross_point:]
         girl.ordering = mother[:cross_point] + father[cross_point:]
-        child.append(boy)
-        child.append(girl)
-    return child
+        childrn.append(boy)
+        childrn.append(girl)
+    return childrn
 
-def mutation(child):
-    for i, children in enumerate(child):
+
+def mutation(childrn):
+    for i, child in enumerate(childrn):
         rnd = round(random.uniform(0.0, 1.0), 2)
         if rnd < MUTATE_RATIO:
             queen = random.randrange(0, NUMBER_OF_QUEENS)
             pos = random.randrange(0, NUMBER_OF_QUEENS)
-            children.ordering[queen] = pos
-    return child
+            child.ordering[queen] = pos
+    return childrn
 
 
-population = create_population()
+def visual(number):
+    f = open("v", "w")
+    for i in range(NUMBER_OF_QUEENS - 1, -1, -1):
+        line = ""
+        for j in range(NUMBER_OF_QUEENS):
+            if i == number[j]:
+                line += "+"
+            else:
+                line += "="
+        f.write(line + "\n")
+    f.close()
 
-condition = True
-while condition:
-    fitted_population = fitness(population)
-    parents = selection(fitted_population)
-    mutation(cross_over(parents))
+
+if __name__ == "__main__":
+    population = create_population()
+    answer_found = False
+    while not answer_found:
+        fitted_population = fitness(population)
+        parents = selection(fitted_population)
+        children = mutation(cross_over(parents))
+        fitted_children = fitness(children)
+        sorted_children = sorted(fitted_children, key=lambda x: x.chance, reverse=True)
+        best = max(sorted_children, key=lambda x: x.chance)
+        if best.chance == order(NUMBER_OF_QUEENS):
+            answer_found = True
+            visual(best.ordering)
+        sorted_parents = sorted(parents, key=lambda x: x.chance, reverse=True)
+        population = sorted_parents[:5] + sorted_children[:45]
